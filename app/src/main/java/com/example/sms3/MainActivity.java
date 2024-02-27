@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSms;
     private final int PERMISSION_REQUEST_CODE = 1;
     private static final int PERMISSION_SEND_SMS = 123;
+    private String number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         btnSms = (Button)findViewById(R.id.btnSend);
         Log.d("msg ", "sdkINT= "+ android.os.Build.VERSION.SDK_INT)  ;
         Log.d("msg", "CODE.M= " + android.os.Build.VERSION_CODES.M);
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
             if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
@@ -62,21 +64,43 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.READ_PHONE_NUMBERS},
                         1);
+                Log.d("msg", "permission denied to Phone number po");
+            }
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.READ_CALL_LOG}, 1);
+                Log.d("msg", "permission denied to read call log");
             }
 
 
+        } else {
+            TelephonyManager mTelephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
         }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
         btnSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendSMSMessage();
             }
         });
-
     }
 
     private void sendSMSMessage() {
-        Log.d("msg ", "SMS ");
+        Log.d("msg ", "SMS  z main activity");
         try {
             // Get the default instance of the SmsManager
             SmsManager smsManager = SmsManager.getDefault();
