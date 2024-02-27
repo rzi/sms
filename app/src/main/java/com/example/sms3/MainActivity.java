@@ -5,11 +5,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,12 +41,30 @@ public class MainActivity extends AppCompatActivity {
 
             if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
                     == PackageManager.PERMISSION_DENIED) {
-                Log.d("permission", "permission denied to SEND_SMS - requesting it");
+                Log.d("msg", "permission denied to SEND_SMS - requesting it");
 
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.SEND_SMS},
                         1);
             }
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_DENIED) {
+                Log.d("msg", "permission denied to Phone state - requesting it");
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        1);
+            }
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS)
+                    == PackageManager.PERMISSION_DENIED) {
+                Log.d("msg", "permission denied to Phone number - requesting it");
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.READ_PHONE_NUMBERS},
+                        1);
+            }
+
+
         }
         btnSms.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendSMSMessage() {
+        Log.d("msg ", "SMS ");
         try {
             // Get the default instance of the SmsManager
             SmsManager smsManager = SmsManager.getDefault();
