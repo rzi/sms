@@ -11,35 +11,26 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
-
+    String number;
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
             Log.d("msg", "Receiver start");
             String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            String number = incomingNumber.toString();
+            number = incomingNumber.toString();
             Log.d("msg", "number : "+ number);
-            sendSMS(number, " ha, ha, ha");
+            goToIntent(context, number);
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private void sendSMS(String number, String  message) {
-        Log.d("msg ", "SMS  z broadcaast");
-        try {
-            // Get the default instance of the SmsManager
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(number,
-                    null,
-                    message,
-                    null,
-                    null);
-                Log.d("msg" ,"sms sent");
-        } catch (Exception ex) {
-            Log.d("msg" ,"problem with sending of sms");
-            ex.printStackTrace();
-        }
+    private void goToIntent(Context context, String number) {
+        Log.d("msg ", "gotintent");
+        Intent myIntent = new Intent(context, SecondActivity.class);
+        myIntent.putExtra("number",number);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(myIntent);
     }
 }
