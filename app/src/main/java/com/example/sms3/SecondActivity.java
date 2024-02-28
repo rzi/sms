@@ -1,5 +1,7 @@
 package com.example.sms3;
 
+import static com.example.sms3.MainActivity.count;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -29,9 +31,11 @@ public class SecondActivity extends AppCompatActivity {
                     null);
             Log.d("msg" ,"sms sent");
             Toast.makeText(getApplicationContext(),"Wysano SMS do dzwoniącego o treści: \n "+message,Toast.LENGTH_LONG).show();
-
+            count = count +1;
+            Log.d ("msg", "count = "+count);
         } catch (Exception ex) {
             Log.d("msg" ,"problem with sending of sms");
+            Toast.makeText(getApplicationContext(),"Błąd wysyłania SMS! ",Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
         finish();

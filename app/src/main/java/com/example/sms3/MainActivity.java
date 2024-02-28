@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,16 +29,12 @@ public class MainActivity extends AppCompatActivity {
     private final int PERMISSION_REQUEST_CODE = 1;
     private static final int PERMISSION_SEND_SMS = 123;
     private String number;
+    public static int count =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txtMobile = (EditText)findViewById(R.id.mblTxt);
-        txtMessage = (EditText)findViewById(R.id.msgTxt);
-        btnSms = (Button)findViewById(R.id.btnSend);
-        Log.d("msg ", "sdkINT= "+ android.os.Build.VERSION.SDK_INT)  ;
-        Log.d("msg", "CODE.M= " + android.os.Build.VERSION_CODES.M);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
@@ -91,30 +88,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        btnSms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendSMSMessage();
-            }
-        });
     }
 
-    private void sendSMSMessage() {
-        Log.d("msg ", "SMS  z main activity");
-        try {
-            // Get the default instance of the SmsManager
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(txtMobile.getText().toString(),
-                    null,
-                    txtMessage.getText().toString(),
-                    null,
-                    null);
-            Toast.makeText(getApplicationContext(), "Your sms has successfully sent!",
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(), "Your sms has failed...",
-                    Toast.LENGTH_LONG).show();
-            ex.printStackTrace();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        TextView textView = (TextView) findViewById(R.id.textView3);
+        String counter = Integer.toString(count);
+
+        Log.d("msg", " resume "+ counter);
+        textView.setText(counter); //set text for text view
     }
 }
