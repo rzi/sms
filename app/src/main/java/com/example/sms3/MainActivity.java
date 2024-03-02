@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,37 +42,37 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission 1 Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission 1 Granted", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission granted 1");
             } else {
-                Toast.makeText(this, "Permission 1 DENIED", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission 1 DENIED", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission deined 1");
             }
             logs=logs+"\nSEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
         }else if (requestCode == 2){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission  2 Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission  2 Granted", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission granted 2");
             } else {
-                Toast.makeText(this, "Permission 2 DENIED", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission 2 DENIED", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission deined 2");
             }
             logs=logs+"\nREAD_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
         }else if(requestCode == 3){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission  3 Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission  3 Granted", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission granted 3");
             } else {
-                Toast.makeText(this, "Permission 3 DENIED", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission 3 DENIED", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission deined 3");
             }
             logs=logs+"\nREAD_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
         }else if(requestCode == 4){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission  4 Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission  4 Granted", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission granted 4");
             } else {
-                Toast.makeText(this, "Permission 4 DENIED", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission 4 DENIED", Toast.LENGTH_SHORT).show();
                 Log.d("msg", "permission deined 4");
             }
             logs=logs+"\nREAD_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
@@ -87,6 +88,26 @@ public class MainActivity extends AppCompatActivity {
         tvLogs = (TextView) findViewById(R.id.textView4);
         logs="";
         logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
+        tvLogs.setText(logs); //set text for text view
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        logs="";
+        TextView textView = (TextView) findViewById(R.id.textView3);
+        String counter = Integer.toString(count);
+
+        Log.d("msg", " resume "+ counter);
+        textView.setText(counter); //set text for text view
         tvLogs.setText(logs); //set text for text view
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -164,23 +185,17 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
-        TextView textView = (TextView) findViewById(R.id.textView3);
-        String counter = Integer.toString(count);
-
-        Log.d("msg", " resume "+ counter);
-        textView.setText(counter); //set text for text view
-        tvLogs.setText(logs); //set text for text view
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
+            for (int i = 0; i < pi.requestedPermissions.length; i++) {
+                if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                    Log.d("msg", "granted "  + pi.requestedPermissions[i]);
+                }else {
+                    Log.d("msg", "deined " + pi.requestedPermissions[i]);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
