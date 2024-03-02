@@ -72,17 +72,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
         Log.d("msg", String.valueOf(android.os.Build.VERSION.SDK_INT));
         Log.d("msg", String.valueOf(android.os.Build.VERSION_CODES.M));
         tvLogs = (TextView) findViewById(R.id.textView4);
@@ -162,6 +151,18 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
         TextView textView = (TextView) findViewById(R.id.textView3);
         String counter = Integer.toString(count);
 
