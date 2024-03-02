@@ -38,33 +38,43 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        Log.d("msg" , "GR = "+String.valueOf(grantResults.length));
-//        Log.d("msg" , "permission0 = "+permissions[0]);
-//        Log.d("msg" , "permission1 = "+permissions[1]);
+
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission 1 Granted", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission granted 1");
             } else {
                 Toast.makeText(this, "Permission 1 DENIED", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission deined 1");
             }
+            logs=logs+"\nSEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
         }else if (requestCode == 2){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission  2 Granted", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission granted 2");
             } else {
                 Toast.makeText(this, "Permission 2 DENIED", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission deined 2");
             }
+            logs=logs+"\nREAD_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
         }else if(requestCode == 3){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission  3 Granted", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission granted 3");
             } else {
                 Toast.makeText(this, "Permission 3 DENIED", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission deined 3");
             }
+            logs=logs+"\nREAD_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
         }else if(requestCode == 4){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission  4 Granted", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission granted 4");
             } else {
                 Toast.makeText(this, "Permission 4 DENIED", Toast.LENGTH_SHORT).show();
+                Log.d("msg", "permission deined 4");
             }
+            logs=logs+"\nREAD_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
         }
     }
 
@@ -85,48 +95,49 @@ public class MainActivity extends AppCompatActivity {
             if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
                     == PackageManager.PERMISSION_DENIED) {
                 Log.d("msg", "permission denied to SEND_SMS - requesting it");
-                logs=logs+"\nManifest.permission.SEND_SMS = false";
+                logs=logs+"\nManifest.permission.SEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
                 tvLogs.setText(logs); //set text for text view
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.SEND_SMS},
                         1);
             }else {
-                logs=logs+"\nManifest.permission.SEND_SMS = true";
+                logs=logs+"\nManifest.permission.SEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
                 tvLogs.setText(logs); //set text for text view
             };
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
                     == PackageManager.PERMISSION_DENIED) {
                 Log.d("msg", "permission denied to Phone state - requesting it");
-                logs=logs+"\nManifest.permission.READ_PHONE_STATE = false";
+                logs=logs+"\nManifest.permission.READ_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
                 tvLogs.setText(logs); //set text for text view
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.READ_PHONE_STATE},
                         2);
             }else {
-                logs=logs+"\nManifest.permission.READ_PHONE_STATE = true";
+                logs=logs+"\nManifest.permission.READ_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
                 tvLogs.setText(logs); //set text for text view
             };
             if (checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS)
                     == PackageManager.PERMISSION_DENIED) {
                 Log.d("msg", "permission denied to Phone number - requesting it");
-                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = false";
+                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
                 tvLogs.setText(logs); //set text for text view
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.READ_PHONE_NUMBERS},
                         3);
                 Log.d("msg", "permission denied to Phone number po");
             }else {
-                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = true";
+                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
                 tvLogs.setText(logs); //set text for text view
             };
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ) {
+            if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)
+                    != PackageManager.PERMISSION_GRANTED ) {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.READ_CALL_LOG}, 4);
                 Log.d("msg", "permission denied to read call log");
-                logs=logs+"\nManifest.permission.READ_CALL_LOG = false";
+                logs=logs+"\nManifest.permission.READ_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
                 tvLogs.setText(logs); //set text for text view
             }else {
-                logs=logs+"\nManifest.permission.READ_CALL_LOG = true";
+                logs=logs+"\nManifest.permission.READ_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
                 tvLogs.setText(logs); //set text for text view
             };
 
@@ -140,8 +151,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("msg"," jestem w if2");
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d("msg"," jestem w if2 czyli jest jakieś  denide");
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -168,6 +181,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("msg", " resume "+ counter);
         textView.setText(counter); //set text for text view
-//        tvLogs.refreshDrawableState();
+        tvLogs.setText(logs); //set text for text view
     }
 }
