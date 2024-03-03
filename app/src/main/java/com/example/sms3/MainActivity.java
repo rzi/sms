@@ -1,15 +1,21 @@
 package com.example.sms3;
 
+import static com.example.sms3.R.color.*;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -169,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         });
         button1 =(Button) findViewById(R.id.button);
         button1.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View v) {
                 Log.d("msg", "Button click");
@@ -179,9 +186,14 @@ public class MainActivity extends AppCompatActivity {
                     if (isOn) {
                         isOn = false;
                         Toast.makeText(MainActivity.this , "Wyłączone", Toast.LENGTH_SHORT).show();
+                        button1.setText("Włącz");
+                        button1.setBackgroundColor(Color.RED);
                     }else {
                         isOn = true;
                         Toast.makeText(MainActivity.this , "Włączone", Toast.LENGTH_SHORT).show();
+                        button1.setText("Wyłącz");
+                        button1.setBackgroundColor(Color.GREEN);
+
                     }
                 } else {
                     Toast.makeText(MainActivity.this, "Włącz wszystkie uprawnienia", Toast.LENGTH_SHORT).show();

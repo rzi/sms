@@ -104,7 +104,8 @@
         android:layout_marginTop="24dp"
         android:text="Włącz"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch4" />
+        app:layout_constraintTop_toBottomOf="@+id/switch4"
+        android:backgroundTint="@color/colorOffRed"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
