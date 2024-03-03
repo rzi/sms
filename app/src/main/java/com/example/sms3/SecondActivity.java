@@ -1,6 +1,7 @@
 package com.example.sms3;
 
 import static com.example.sms3.MainActivity.count;
+import static com.example.sms3.MainActivity.isOn;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,22 +22,26 @@ public class SecondActivity extends AppCompatActivity {
         String number = myIntent.getStringExtra("number"); // will return "FirstKeyValue"
         Log.d("msg", "number = " +number);
         String message ="ha ha ha ";
-        try {
-            // Get the default instance of the SmsManager
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(number,
-                    null,
-                    message,
-                    null,
-                    null);
-            Log.d("msg" ,"sms sent");
-            Toast.makeText(getApplicationContext(),"Wysano SMS do dzwoniącego o treści: \n "+message,Toast.LENGTH_LONG).show();
-            count = count +1;
-            Log.d ("msg", "count = "+count);
-        } catch (Exception ex) {
-            Log.d("msg" ,"problem with sending of sms");
-            Toast.makeText(getApplicationContext(),"Błąd wysyłania SMS! ",Toast.LENGTH_LONG).show();
-            ex.printStackTrace();
+        if (isOn) {
+            try {
+                // Get the default instance of the SmsManager
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage(number,
+                        null,
+                        message,
+                        null,
+                        null);
+                Log.d("msg", "sms sent");
+                Toast.makeText(getApplicationContext(), "Wysano SMS do dzwoniącego o treści: \n " + message, Toast.LENGTH_LONG).show();
+                count = count + 1;
+                Log.d("msg", "count = " + count);
+            } catch (Exception ex) {
+                Log.d("msg", "problem with sending of sms");
+                Toast.makeText(getApplicationContext(), "Błąd wysyłania SMS! ", Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
+            }
+        }else {
+            Log.d("msg", "nie wysano SMS p nie włączone");
         }
         finish();
 

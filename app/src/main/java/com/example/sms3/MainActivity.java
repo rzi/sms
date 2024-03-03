@@ -17,7 +17,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private String number;
     public static int count =0;
     public static String logs;
+    public Switch switch1,switch2, switch3,switch4;
+    public Button button1;
+    public  static boolean isOn;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -86,116 +91,156 @@ public class MainActivity extends AppCompatActivity {
         Log.d("msg", String.valueOf(android.os.Build.VERSION.SDK_INT));
         Log.d("msg", String.valueOf(android.os.Build.VERSION_CODES.M));
         tvLogs = (TextView) findViewById(R.id.textView4);
-        logs="";
+        logs="Logi: ";
         logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
         tvLogs.setText(logs); //set text for text view
 
-    }
+        switch1 = (Switch) findViewById(R.id.switch1);
+        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("Switch1 State=", ""+isChecked);
+                if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
+                        == PackageManager.PERMISSION_DENIED) {
+                    Log.d("msg", "permission denied to SEND_SMS - requesting it");
+                    logs=logs+"\n.SEND_SMS = " + "Denied";
+                    tvLogs.setText(logs); //set text for text view
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.SEND_SMS},
+                            1);
+                }else {
+                    logs=logs+"\n.SEND_SMS = " + "Granted";
+                    tvLogs.setText(logs); //set text for text view
+                };
+            }
+        });
+        switch2 = (Switch) findViewById(R.id.switch2);
+        switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("Switch2 State=", ""+isChecked);
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                        == PackageManager.PERMISSION_DENIED) {
+                    Log.d("msg", "permission denied to Phone state - requesting it");
+                    logs=logs+"\n.READ_PHONE_STATE = " + "Denied";
+                    tvLogs.setText(logs); //set text for text view
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.READ_PHONE_STATE},
+                            2);
+                }else {
+                    logs=logs+"\n.READ_PHONE_STATE = " + "Granted";
+                    tvLogs.setText(logs); //set text for text view
+                };
+            }
+        });
+        switch3 = (Switch) findViewById(R.id.switch3);
+        switch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("Switch3 State=", ""+isChecked);
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS)
+                        == PackageManager.PERMISSION_DENIED) {
+                    Log.d("msg", "permission denied to Phone number - requesting it");
+                    logs=logs+"\n.READ_PHONE_NUMBERS = " + "Denied";
+                    tvLogs.setText(logs); //set text for text view
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.READ_PHONE_NUMBERS},
+                            3);
+                    Log.d("msg", "permission denied to Phone number po");
+                }else {
+                    logs=logs+"\n.READ_PHONE_NUMBERS = " + "Granted";
+                    tvLogs.setText(logs); //set text for text view
+                };
+            }
+        });
+        switch4 = (Switch) findViewById(R.id.switch4);
+        switch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("Switch4 State=", ""+isChecked);
+                if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)
+                        != PackageManager.PERMISSION_GRANTED ) {
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.READ_CALL_LOG}, 4);
+                    Log.d("msg", "permission denied to read call log");
+                    logs=logs+"\n.READ_CALL_LOG = " + "Denied";
+                    tvLogs.setText(logs); //set text for text view
+                }else {
+                    logs=logs+"\n.READ_CALL_LOG = " + "Granted";
+                    tvLogs.setText(logs); //set text for text view
+                };
+            }
+        });
+        button1 =(Button) findViewById(R.id.button);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("msg", "Button click");
+                logs="";
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+                if(switch1.isChecked() && switch2.isChecked() && switch3.isChecked() &&switch4.isChecked()){
 
+                    if (isOn) {
+                        isOn = false;
+                        Toast.makeText(MainActivity.this , "Wyłączone", Toast.LENGTH_SHORT).show();
+                    }else {
+                        isOn = true;
+                        Toast.makeText(MainActivity.this , "Włączone", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Włącz wszystkie uprawnienia", Toast.LENGTH_SHORT).show();
+                }
+                onResume();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        logs = "";
+        logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
+        logs=logs+"\nisOn = " + (isOn ? "włączone": "wyłączone");
 
-        logs="";
+        String counter = null;
         TextView textView = (TextView) findViewById(R.id.textView3);
-        String counter = Integer.toString(count);
-
-        Log.d("msg", " resume "+ counter);
+        counter = Integer.toString(count);
+        Log.d("msg", " resume " + counter);
         textView.setText(counter); //set text for text view
-        tvLogs.setText(logs); //set text for text view
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            Log.d("msg"," jestem w if");
-
-            if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
-                    == PackageManager.PERMISSION_DENIED) {
-                Log.d("msg", "permission denied to SEND_SMS - requesting it");
-                logs=logs+"\nManifest.permission.SEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
-                tvLogs.setText(logs); //set text for text view
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        1);
-            }else {
-                logs=logs+"\nManifest.permission.SEND_SMS = " + checkSelfPermission(android.Manifest.permission.SEND_SMS);
-                tvLogs.setText(logs); //set text for text view
-            };
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    == PackageManager.PERMISSION_DENIED) {
-                Log.d("msg", "permission denied to Phone state - requesting it");
-                logs=logs+"\nManifest.permission.READ_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
-                tvLogs.setText(logs); //set text for text view
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_PHONE_STATE},
-                        2);
-            }else {
-                logs=logs+"\nManifest.permission.READ_PHONE_STATE = " + checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
-                tvLogs.setText(logs); //set text for text view
-            };
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS)
-                    == PackageManager.PERMISSION_DENIED) {
-                Log.d("msg", "permission denied to Phone number - requesting it");
-                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
-                tvLogs.setText(logs); //set text for text view
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_PHONE_NUMBERS},
-                        3);
-                Log.d("msg", "permission denied to Phone number po");
-            }else {
-                logs=logs+"\nManifest.permission.READ_PHONE_NUMBERS = " + checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS);
-                tvLogs.setText(logs); //set text for text view
-            };
-            if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)
-                    != PackageManager.PERMISSION_GRANTED ) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_CALL_LOG}, 4);
-                Log.d("msg", "permission denied to read call log");
-                logs=logs+"\nManifest.permission.READ_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
-                tvLogs.setText(logs); //set text for text view
-            }else {
-                logs=logs+"\nManifest.permission.READ_CALL_LOG = " + checkSelfPermission(Manifest.permission.READ_CALL_LOG);
-                tvLogs.setText(logs); //set text for text view
-            };
 
 
-        } else {
-            TelephonyManager mTelephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-        }
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.d("msg"," jestem w if2 czyli jest jakieś  denide");
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//            Log.d("msg"," jestem w if");
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            Log.d("msg"," jestem w if2 czyli jest jakieś  denide");
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
             for (int i = 0; i < pi.requestedPermissions.length; i++) {
                 if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                    Log.d("msg", "granted "  + pi.requestedPermissions[i]);
-                }else {
+                    Log.d("msg", "granted " + pi.requestedPermissions[i]);
+                    logs= logs + "\n"+
+                            pi.requestedPermissions[i].toString().substring(18) +
+                            "  = 1";
+                } else {
                     Log.d("msg", "deined " + pi.requestedPermissions[i]);
+                    logs= logs + "\n"+
+                            pi.requestedPermissions[i].toString().substring(18) +
+                            "  = 0";
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        tvLogs.setText(logs); //set text for text view
     }
 }
