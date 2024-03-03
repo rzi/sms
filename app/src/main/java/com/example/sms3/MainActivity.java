@@ -1,50 +1,57 @@
 package com.example.sms3;
 
-import static com.example.sms3.R.color.*;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     private EditText txtMobile;
-    private EditText txtMessage;
-    private TextView tvLogs;
-    private Button btnSms;
+    public EditText txtMessage, etSms, etNumber;
+    private TextView tvLogs;;
     private final int PERMISSION_REQUEST_CODE = 1;
     private static final int PERMISSION_SEND_SMS = 123;
     private String number;
     public static int count =0;
     public static String logs;
     public Switch switch1,switch2, switch3,switch4;
-    public Button button1;
+    public Button button1 ,btnAdd;
     public  static boolean isOn;
+    public static CheckBox cbWhenDecline;
+    public static boolean isCheckBoxDecline;
+    public ListView list ;
+    public ArrayAdapter<String> adapter ;
+    public ArrayList<String> myList2;
+    public List<String> mylist = new ArrayList<String>();
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -90,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         logs="Logi: ";
         logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
         tvLogs.setText(logs); //set text for text view
-
+        Map<Integer, String> galaxy = new HashMap<>();
         switch1 = (Switch) findViewById(R.id.switch1);
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -116,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     logs=logs+"\n.SEND_SMS = " + "Granted";
                     tvLogs.setText(logs); //set text for text view
+//                    MainActivity.getPermission(PERMISSION_SEND_SMS).deny();
                 };
             }
         });
@@ -201,6 +210,65 @@ public class MainActivity extends AppCompatActivity {
                 onResume();
             }
         });
+        cbWhenDecline = (CheckBox) findViewById(R.id.checkBox);
+        cbWhenDecline.setChecked(true);
+        cbWhenDecline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cbWhenDecline.isChecked()){
+                    isCheckBoxDecline=true;
+                    Log.d("msg", "checkbox Decline is "+ isCheckBoxDecline);
+                }else {
+                    isCheckBoxDecline=false;
+                    Log.d("msg", "checkbox Decline is "+ isCheckBoxDecline);
+                }
+            }
+        });
+        etNumber = findViewById(R.id.editTextNumber);
+        etSms = findViewById(R.id.editTextTextMultiLine);
+        btnAdd =(Button) findViewById(R.id.button2);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("msg", "Button Add");
+                if (etNumber.getText().toString().equals("") || etSms.getText().toString().equals("")){
+                    Log.d("msg", "wypełnij pola mumber i trec SMS" );
+                    Toast.makeText(MainActivity.this, "Wypełnij pole numeru i treść SMS", Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.d("msg", "etNumber = " +etNumber.getText().toString() + "\netSms = " + etSms.getText().toString() );
+                    galaxy.put(Integer.valueOf(etNumber.getText().toString()),etSms.getText().toString());
+                    mylist.add(Integer.valueOf(etNumber.getText().toString())+ ",\n"+etSms.getText().toString());
+                    updateView();
+                }
+                etNumber.setText("");
+                etSms.setText("");
+            }
+        });
+        ListView listView =(android.widget.ListView) findViewById(R.id.listView1);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+//                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+//                String message = "abc";
+//                intent.putExtra("EXTRA_MESSAGE", message);
+//                startActivity(intent);
+
+                Log.d("msg" , "positions = " + position);
+                showDialog1(position);
+            }
+        });
+
+
+    }
+
+    private void updateView() {
+        list = (ListView) findViewById(R.id.listView1);
+        myList2 = new ArrayList<String>();
+        myList2.addAll(mylist);
+        adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);
+        list.setAdapter(adapter);
     }
 
     @Override
@@ -254,5 +322,30 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         tvLogs.setText(logs); //set text for text view
+    }
+
+    public void showDialog1(int position)
+    {
+        Log.d("msg" , "pos= =" +position);
+        Context context =MainActivity.this;
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(true);
+        builder.setTitle("Usunięcie");
+        builder.setMessage("Usunąć pozycje ?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mylist.remove(position);
+                updateView();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 }

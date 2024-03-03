@@ -5,9 +5,7 @@
     <uses-permission
         android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.READ_PHONE_STATE"
- />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.SEND_SMS"
         tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
@@ -24,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sms3"
         tools:targetApi="34">
+        <activity
+            android:name=".Settings"
+            android:exported="false" />
         <activity
             android:name=".SecondActivity"
             android:exported="false" />
