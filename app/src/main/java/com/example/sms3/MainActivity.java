@@ -42,7 +42,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     public EditText etSms, etNumber;
-    private TextView tvLogs;;
+    private TextView tvLogs;
+    public static TextView tvQty;
     private final int PERMISSION_REQUEST_CODE = 1;
     private static final int PERMISSION_SEND_SMS = 123;
     private String number;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayAdapter<String> adapter ;
     public ArrayList<String> myList2;
     public static List<String> mylist = new ArrayList<String>();
+    public static int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("msg", "main");
         etNumber = findViewById(R.id.editTextNumber1);
         etSms = findViewById(R.id.editTextTextMultiLine);
+        tvQty =findViewById(R.id.textView3);
+        tvQty.setText("");
         btnAdd =(Button) findViewById(R.id.button2);
         button1 =(Button) findViewById(R.id.button);
         btnSettings = (Button) findViewById(R.id.button4) ;

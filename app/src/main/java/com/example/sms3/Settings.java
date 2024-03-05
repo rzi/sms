@@ -22,7 +22,6 @@ public class Settings extends AppCompatActivity {
     public static Switch switch1,switch2, switch3,switch4;
     public static String logs;
     public TextView tvLogs;
-    public static int count = 0;
     public boolean fromIntent = false;
 
     @Override

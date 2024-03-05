@@ -1,9 +1,10 @@
 package com.example.sms3;
 
 import static com.example.sms3.MainActivity.cbWhenDecline;
+import static com.example.sms3.MainActivity.count;
 import static com.example.sms3.MainActivity.isOn;
 import static com.example.sms3.MainActivity.mylist;
-import static com.example.sms3.Settings.count;
+import static com.example.sms3.MainActivity.tvQty;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,13 +27,15 @@ public class SecondActivity extends AppCompatActivity {
         // getIntent() is a method from the started activity
         Intent myIntent = getIntent(); // gets the previously created intent
         String number = myIntent.getStringExtra("number"); // will return "FirstKeyValue"
-        Log.d("msg", "number ggg= " +number);
+        Log.d("msg", "number from Intent= " +number);
         message ="ha ha ha ";
 
         if (mylist.size() == 0) {
             Log.d("msg" , "mylist.size = " +mylist.size());
             Toast.makeText(getApplicationContext(), "Lista numerów i SMSów jest pusta", Toast.LENGTH_LONG).show();
-        }else{
+        }else if(number == "null"){
+            Log.d("msg" , "brak numeru z intencji");
+        }else {
             for (String item : mylist) {
                 Log.d("msg" , "item = " +item);
                 String[] words = item.split(",");
@@ -54,8 +57,10 @@ public class SecondActivity extends AppCompatActivity {
                                     null);
                             Log.d("msg", "sms sent");
                             Toast.makeText(getApplicationContext(), "Wysano SMS do dzwoniącego o treści: \n " + mText, Toast.LENGTH_LONG).show();
-                            count = count + 1;
+                            count= count+1;
                             Log.d("msg", "count = " + count);
+                            tvQty.setText(String.valueOf(count));
+
                         } catch (Exception ex) {
                             Log.d("msg", "problem with sending of sms");
                             Toast.makeText(getApplicationContext(), "Błąd wysyłania SMS! ", Toast.LENGTH_LONG).show();
