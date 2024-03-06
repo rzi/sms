@@ -20,20 +20,27 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-                Log.d("msg", "Połączenie odebrane");
-                Log.d("msg", "outgoing number : " + number);
-            }
-            else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-                Log.d("msg", "Dzwoni");
-                Log.d("msg", "incoming number : " + number);
+            Log.d("msg", "state = " + state);
+            if(state.equals(TelephonyManager.EXTRA_STATE_RINGING) ||
+                    state.equals(TelephonyManager.EXTRA_STATE_IDLE)
+                    ){
+                Log.d("msg", "Połączenie z " +number);
                 doAction(myContext, intent);
             }
-            else if(state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
-                Log.d("msg", "Połączenie odrzucone (zakończone)");
-                Log.d("msg", "outgoing number : " + number);
-               doAction(myContext, intent);
-            }
+//            if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
+//                Log.d("msg", "Połączenie odebrane");
+//                Log.d("msg", "outgoing number : " + number);
+//            }
+//            else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
+//                Log.d("msg", "Dzwoni");
+//                Log.d("msg", "incoming number : " + number);
+//                doAction(myContext, intent);
+//            }
+//            else if(state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
+//                Log.d("msg", "Połączenie odrzucone (zakończone)");
+//                Log.d("msg", "outgoing number : " + number);
+//               doAction(myContext, intent);
+//            }
         }
     }
 
