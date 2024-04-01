@@ -10,7 +10,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
-    String number;
+    String number, state;
     private Context context;
 
     @Override
@@ -18,15 +18,21 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         Context myContext = context;
         if(intent.getAction().equals("android.intent.action.PHONE_STATE")){
 
-            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+            state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
             Log.d("msg", "state = " + state);
-            if(state.equals(TelephonyManager.EXTRA_STATE_RINGING) ||
+            if(
                     state.equals(TelephonyManager.EXTRA_STATE_IDLE)
-                    ){
+            ){
                 Log.d("msg", "Połączenie z " +number);
                 doAction(myContext, intent);
             }
+//            if(state.equals(TelephonyManager.EXTRA_STATE_RINGING) ||
+//                    state.equals(TelephonyManager.EXTRA_STATE_IDLE)
+//                    ){
+//                Log.d("msg", "Połączenie z " +number);
+//                doAction(myContext, intent);
+//            }
 //            if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
 //                Log.d("msg", "Połączenie odebrane");
 //                Log.d("msg", "outgoing number : " + number);
@@ -53,6 +59,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 Log.d("msg", "Broadcast number : "+ number);
                 Intent myIntent = new Intent(myContext, SecondActivity.class);
                 myIntent.putExtra("number",number);
+                myIntent.putExtra("state",state);
                 myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 myContext.startActivity(myIntent);
             }

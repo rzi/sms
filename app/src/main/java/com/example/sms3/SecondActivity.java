@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.util.Iterator;
 
 public class SecondActivity extends AppCompatActivity {
-    public String mNumber, mText;
+    public String mNumber, mText, mState;
     public String message ="ha ha ha ";
 
     @Override
@@ -27,7 +27,8 @@ public class SecondActivity extends AppCompatActivity {
         // getIntent() is a method from the started activity
         Intent myIntent = getIntent(); // gets the previously created intent
         String number = myIntent.getStringExtra("number"); // will return "FirstKeyValue"
-        Log.d("msg", "number from Intent= " +number);
+        String state = myIntent.getStringExtra("state");
+        Log.d("msg", "number from Intent= " +number + " state= "+ state);
         message ="ha ha ha ";
 
         if (mylist.size() == 0) {
@@ -43,9 +44,9 @@ public class SecondActivity extends AppCompatActivity {
                 mText = words[1];
                 Log.d("msg" , "mNumber = " +mNumber);
                 Log.d("msg" , "mText = " +mText);
-                if (mNumber.equals(number) ){
+                if (mNumber.equals(number) && state.equals("IDLE")){
                     Log.d("msg" , "mNumber = "+ mNumber + " mText = " + mText);
-                    Toast.makeText(getApplicationContext(), "Wysłanie SMS na numer telefonu  "+ number, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Wysłanie SMS na numer telefonu  "+ number, Toast.LENGTH_LONG).show();
                     if (isOn && mylist.size() >0 && cbWhenDecline.isChecked()) {
                         try {
                             // Get the default instance of the SmsManager
