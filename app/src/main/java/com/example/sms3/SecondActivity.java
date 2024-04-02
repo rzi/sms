@@ -44,7 +44,7 @@ public class SecondActivity extends AppCompatActivity {
                 mText = words[1];
                 Log.d("msg" , "mNumber = " +mNumber);
                 Log.d("msg" , "mText = " +mText);
-                if (mNumber.equals(number) && state.equals("IDLE")){
+                if (mNumber.equals(number) && state.equals("RINGING")){
                     Log.d("msg" , "mNumber = "+ mNumber + " mText = " + mText);
                     //Toast.makeText(getApplicationContext(), "Wysłanie SMS na numer telefonu  "+ number, Toast.LENGTH_LONG).show();
                     if (isOn && mylist.size() >0 && cbWhenDecline.isChecked()) {

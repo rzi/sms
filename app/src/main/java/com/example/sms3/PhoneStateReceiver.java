@@ -22,7 +22,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
             Log.d("msg", "state = " + state);
             if(
-                    state.equals(TelephonyManager.EXTRA_STATE_IDLE)
+                    state.equals(TelephonyManager.EXTRA_STATE_RINGING)
             ){
                 Log.d("msg", "Połączenie z " +number);
                 doAction(myContext, intent);
