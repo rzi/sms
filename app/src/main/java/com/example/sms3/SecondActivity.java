@@ -18,6 +18,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Date;
 import java.util.Iterator;
 
 public class SecondActivity extends AppCompatActivity {
@@ -67,6 +68,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void sendSms() {
+        Logger.addRecordToLog("Data "+ new Date() + " Send SMS");
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

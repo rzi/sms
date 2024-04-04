@@ -17,6 +17,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+
 public class Settings extends AppCompatActivity {
     public Button btnExit;
     public static Switch switch1,switch2, switch3,switch4;
@@ -117,7 +119,7 @@ public class Settings extends AppCompatActivity {
                 };
             }
         });
-
+        Logger.addRecordToLog("Data "+ new Date() + " Display settings");
 
     }
 

@@ -20,6 +20,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +34,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<String> myList2;
     public static List<String> mylist = new ArrayList<String>();
     public static int count = 0;
+    Logger logger ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,10 +178,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.d("msg", "save");
+        logger.addRecordToLog("test!");
+
         //go to settings
         Log.d("msg", "go to settings");
         Intent intent = new Intent(MainActivity.this, Settings.class);
         startActivity(intent);
+
     }
     @Override
     protected void onResume() {
