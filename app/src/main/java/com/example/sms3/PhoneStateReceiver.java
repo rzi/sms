@@ -25,15 +25,17 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
+                    " state =" +state + " number = " + number);
             Log.d("msg", "state = " + state);
             if(
                     state.equals(TelephonyManager.EXTRA_STATE_RINGING)
             ){
                 Log.d("msg", "Połączenie z " +number);
-                doAction(myContext, intent);
+//                doAction(myContext, intent);
             }
-            Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
-            " state =" +state + " number = " + number);
+//            Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
+//            " state =" +state + " number = " + number);
 //            if(state.equals(TelephonyManager.EXTRA_STATE_RINGING) ||
 //                    state.equals(TelephonyManager.EXTRA_STATE_IDLE)
 //                    ){
