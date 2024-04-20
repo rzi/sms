@@ -73,7 +73,7 @@ public class Settings extends AppCompatActivity {
                 Log.d("msg", "read logs");
                 tvLogs.setText("");
                 try {
-                    Process process = Runtime.getRuntime().exec("logcat -d");
+                    Process process = Runtime.getRuntime().exec("logcat -d msg:D *:S");
                     BufferedReader bufferedReader = new BufferedReader(
                             new InputStreamReader(process.getInputStream()));
                     StringBuilder log = new StringBuilder();
@@ -84,6 +84,9 @@ public class Settings extends AppCompatActivity {
                             String linia3 = line.substring(42,line.length());
                             String linia4 = linia2 + " " + linia3;
                             log.append(linia4);
+                            log.append("\n");
+                        } else {
+                            log.append(line);
                             log.append("\n");
                         }
                     }
