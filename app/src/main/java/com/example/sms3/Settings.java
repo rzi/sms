@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,10 +18,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 public class Settings extends AppCompatActivity {
-    public Button btnExit;
+    public Button btnExit , btnClear, btnRead;
     public static Switch switch1,switch2, switch3,switch4;
     public static String logs;
     public TextView tvLogs;
@@ -31,12 +35,13 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Log.d("mag", "settings");
-        Log.d("msg", String.valueOf(android.os.Build.VERSION.SDK_INT));
-        Log.d("msg", String.valueOf(android.os.Build.VERSION_CODES.M));
-        Log.d("msg", "permission denied");
+        Log.d("msg", "ver SDK "+ String.valueOf(android.os.Build.VERSION.SDK_INT));
+        Log.d("msg", "ver SDM M " + String.valueOf(android.os.Build.VERSION_CODES.M));
+
         logs="Logi: ";
         logs=logs+"\nAPI = " + String.valueOf(android.os.Build.VERSION.SDK_INT);
         tvLogs = (TextView) findViewById(R.id.tvLogs);
+        tvLogs.setMovementMethod(new ScrollingMovementMethod());
         tvLogs.setText(logs); //set text for text view
 
         btnExit = (Button) findViewById(R.id.button3);
@@ -46,7 +51,48 @@ public class Settings extends AppCompatActivity {
                 finish();
             }
         });
+        btnClear =(Button) findViewById(R.id.button5);
+        btnClear.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Log.d("msg", "clear logs");
+                    tvLogs.setText("");
 
+                    try {
+                        Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        );
+        btnRead=(Button) findViewById(R.id.button6);
+        btnRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("msg", "read logs");
+                tvLogs.setText("");
+                try {
+                    Process process = Runtime.getRuntime().exec("logcat -d");
+                    BufferedReader bufferedReader = new BufferedReader(
+                            new InputStreamReader(process.getInputStream()));
+                    StringBuilder log = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        if (line.length() >40) {
+                            String linia2 = line.substring(0, 14);
+                            String linia3 = line.substring(42,line.length());
+                            String linia4 = linia2 + " " + linia3;
+                            log.append(linia4);
+                            log.append("\n");
+                        }
+                    }
+                    tvLogs.append(log);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         switch1 = (Switch) findViewById(R.id.switch1);
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -120,7 +166,6 @@ public class Settings extends AppCompatActivity {
             }
         });
         Logger.addRecordToLog("Data "+ new Date() + " Display settings");
-
     }
 
     @Override
@@ -128,7 +173,7 @@ public class Settings extends AppCompatActivity {
         super.onResume();
         String value;
         Bundle bundle = getIntent().getExtras();
-        Log.d("msg", "bundle = "+ bundle);
+//        Log.d("msg", "bundle = "+ bundle);
         if (bundle != null) {
             value = bundle.getString("EXTRA_MESSAGE");
             Log.d("msg", "value = "+ value);
@@ -159,7 +204,23 @@ public class Settings extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        tvLogs.setText(logs); //set text for text view
+//        tvLogs.setText("");
+//        try {
+//            Process process = Runtime.getRuntime().exec("logcat -d");
+//            BufferedReader bufferedReader = new BufferedReader(
+//                    new InputStreamReader(process.getInputStream()));
+//
+//            StringBuilder log=new StringBuilder();
+//            String line = "";
+//            while ((line = bufferedReader.readLine()) != null) {
+//                log.append(line+"\n");
+//            }
+//
+//            tvLogs.append(log.toString());
+//        } catch (IOException e) {
+//            // Handle Exception
+//        }
+       // tvLogs.append(logs); //set text for text view
 
         if (!fromIntent) {
             if (switch1.isChecked() && switch2.isChecked() && switch3.isChecked() && switch4.isChecked()) {
@@ -168,9 +229,6 @@ public class Settings extends AppCompatActivity {
                 Toast.makeText(this, "Brak wsystkich zezwoleń", Toast.LENGTH_SHORT).show();
             }
         }
-
-
-
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 //            Log.d("msg"," jestem w if");
 //
@@ -189,7 +247,6 @@ public class Settings extends AppCompatActivity {
 //            // for ActivityCompat#requestPermissions for more details.
 //            return;
 //        }
-
     }
 
     private void setIfDenied(String substring) {

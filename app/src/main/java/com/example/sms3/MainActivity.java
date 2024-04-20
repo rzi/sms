@@ -34,7 +34,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -180,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("msg", "save");
         logger.addRecordToLog("test!");
+
+
 
         //go to settings
         Log.d("msg", "go to settings");
