@@ -1,6 +1,9 @@
 package com.example.sms3;
 
+import static android.app.PendingIntent.getActivity;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,7 +11,9 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -19,12 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 
 public class Settings extends AppCompatActivity {
-    public Button btnExit , btnClear, btnRead;
+    public Button btnExit , btnClear, btnRead, btnOpenFile;
     public static Switch switch1,switch2, switch3,switch4;
     public static String logs;
     public TextView tvLogs;
@@ -94,6 +101,34 @@ public class Settings extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        btnOpenFile=(Button) findViewById(R.id.button7);
+        btnOpenFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+//                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+//                    i.addCategory(Intent.CATEGORY_DEFAULT);
+//                    startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999);
+//                    Intent result = new Intent();
+//                    result.putExtra("chosenDir", "/");
+//                    setResult(RESULT_OK, result);
+
+//                }
+//                File file = new File(Environment.getExternalStorageDirectory(), "test.txt");
+//                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
+//
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(uri);
+//                startActivity(intent);
+                Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseFile.setType("text/plain");
+                startActivityForResult(
+                        Intent.createChooser(chooseFile, "Choose a file"),
+                        9999
+                );
             }
         });
         switch1 = (Switch) findViewById(R.id.switch1);
@@ -356,4 +391,44 @@ public class Settings extends AppCompatActivity {
         switch1.refreshDrawableState();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 9999 && resultCode == RESULT_OK) {
+            Uri extras = data.getData();
+            String path = (String) extras.getPath();
+            String path2 =path.replace(":","/");
+            Log.d("msg", "path: " +path);
+            Log.d("msg", "path2: " +path2);
+            BufferedReader reader = null;
+            try {
+                // open the user-picked file for reading:
+                InputStream in = this.getContentResolver().openInputStream(data.getData());// now read the content:
+                reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                StringBuilder builder = new StringBuilder();
+
+                while ((line = reader.readLine()) != null){
+                    builder.append(line);
+                    builder.append("\n");
+                }
+                // Do something with the content in
+                tvLogs.append("\n"+ builder.toString());
+                Log.d("msg", "txt:  " +builder.toString());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        }
+    }
 }
