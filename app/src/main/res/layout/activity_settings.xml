@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="10dp"
         android:text="Ustawienia"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,13 +65,14 @@
 
     <TextView
         android:id="@+id/tvLogs"
-        android:layout_width="377dp"
-        android:layout_height="432dp"
+        android:layout_width="wrap_content"
+        android:layout_height="416dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="20dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:paddingBottom="80dp"
+        android:paddingBottom="10dp"
+
         android:scrollbars="vertical"
         android:text="Logi:"
         app:layout_constraintStart_toStartOf="parent"
