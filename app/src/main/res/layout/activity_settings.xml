@@ -64,22 +64,25 @@
     <TextView
         android:id="@+id/tvLogs"
         android:layout_width="wrap_content"
-        android:layout_height="381dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="400dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:paddingLeft="12dp"
-
         android:paddingRight="12dp"
         android:paddingBottom="10dp"
         android:scrollbars="vertical"
         android:text="Logi:"
+        app:layout_constraintBottom_toTopOf="@+id/button6"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switch4" />
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="97dp"
-        android:layout_height="38dp"
+        android:layout_width="102dp"
+        android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Powrót"
@@ -88,8 +91,8 @@
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="133dp"
+        android:layout_height="48dp"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="16dp"
         android:text="czyść Logcat"

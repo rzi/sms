@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -24,10 +26,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 
 public class Settings extends AppCompatActivity {
@@ -36,6 +42,7 @@ public class Settings extends AppCompatActivity {
     public static String logs;
     public TextView tvLogs;
     public boolean fromIntent = false;
+    Logger logger ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +51,11 @@ public class Settings extends AppCompatActivity {
         Log.d("mag", "settings");
         Log.d("msg", "ver SDK "+ String.valueOf(android.os.Build.VERSION.SDK_INT));
         Log.d("msg", "ver SDM M " + String.valueOf(android.os.Build.VERSION_CODES.M));
-
         logs="Logi: ";
         logs=logs+"\nAPI = " + String.valueOf(android.os.Build.VERSION.SDK_INT);
         tvLogs = (TextView) findViewById(R.id.tvLogs);
         tvLogs.setMovementMethod(new ScrollingMovementMethod());
         tvLogs.setText(logs); //set text for text view
-
         btnExit = (Button) findViewById(R.id.button3);
         btnExit.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -107,21 +112,7 @@ public class Settings extends AppCompatActivity {
         btnOpenFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
-//                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-//                    i.addCategory(Intent.CATEGORY_DEFAULT);
-//                    startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999);
-//                    Intent result = new Intent();
-//                    result.putExtra("chosenDir", "/");
-//                    setResult(RESULT_OK, result);
-
-//                }
-//                File file = new File(Environment.getExternalStorageDirectory(), "test.txt");
-//                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-//
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(uri);
-//                startActivity(intent);
+                Log.d("msg", "openfile");
                 Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
                 chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
                 chooseFile.setType("text/plain");
@@ -203,15 +194,14 @@ public class Settings extends AppCompatActivity {
                 };
             }
         });
-        Logger.addRecordToLog("Data "+ new Date() + " Display settings");
+        String mytxt = "Create settings, data "+ new Date() + " Display settings";
+        logger.addRecordToLog(mytxt);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
         String value;
         Bundle bundle = getIntent().getExtras();
-//        Log.d("msg", "bundle = "+ bundle);
         if (bundle != null) {
             value = bundle.getString("EXTRA_MESSAGE");
             Log.d("msg", "value = "+ value);
@@ -242,24 +232,6 @@ public class Settings extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        tvLogs.setText("");
-//        try {
-//            Process process = Runtime.getRuntime().exec("logcat -d");
-//            BufferedReader bufferedReader = new BufferedReader(
-//                    new InputStreamReader(process.getInputStream()));
-//
-//            StringBuilder log=new StringBuilder();
-//            String line = "";
-//            while ((line = bufferedReader.readLine()) != null) {
-//                log.append(line+"\n");
-//            }
-//
-//            tvLogs.append(log.toString());
-//        } catch (IOException e) {
-//            // Handle Exception
-//        }
-       // tvLogs.append(logs); //set text for text view
-
         if (!fromIntent) {
             if (switch1.isChecked() && switch2.isChecked() && switch3.isChecked() && switch4.isChecked()) {
                 finish();
@@ -267,76 +239,7 @@ public class Settings extends AppCompatActivity {
                 Toast.makeText(this, "Brak wsystkich zezwoleń", Toast.LENGTH_SHORT).show();
             }
         }
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//            Log.d("msg"," jestem w if");
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            Log.d("msg"," jestem w if2 czyli jest jakieś  denide");
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
     }
-
-    private void setIfDenied(String substring) {
-        switch (substring) {
-            case "SEND_SMS":
-                switch1.setChecked(false);
-                switch1.refreshDrawableState();
-                Log.d("msg", "SEND_SMS = 0");
-                break;
-            case "READ_PHONE_STATE":
-                switch2.setChecked(false);
-                switch2.refreshDrawableState();
-                Log.d("msg", "READ_PHONE_STATE = 0");
-                break;
-            case "READ_PHONE_NUMBERS":
-                switch3.setChecked(false);
-                switch3.refreshDrawableState();
-                Log.d("msg", "READ_PHONE_NUMBERS = 0");
-                break;
-            case "READ_CALL_LOG":
-                switch4.setChecked(false);
-                Log.d("msg", "READ_CALL_LOG = 0");
-                switch4.refreshDrawableState();
-                break;
-        }
-    }
-
-    private void setIfGranted(String requestedPermission) {
-        switch (requestedPermission) {
-            case "SEND_SMS":
-                switch1.setChecked(true);
-                switch1.refreshDrawableState();
-                Log.d("msg", "SEND_SMS = 1");
-                break;
-            case "READ_PHONE_STATE":
-                switch2.setChecked(true);
-                Log.d("msg", "READ_PHONE_STATE = 1");
-                switch2.refreshDrawableState();
-                break;
-            case "READ_PHONE_NUMBERS":
-                switch3.setChecked(true);
-                Log.d("msg", "READ_PHONE_NUMBERS = 1");
-                switch3.refreshDrawableState();
-                break;
-            case "READ_CALL_LOG":
-                switch4.setChecked(true);
-                Log.d("msg", "READ_CALL_LOG = 1");
-                switch4.refreshDrawableState();
-                break;
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -390,16 +293,10 @@ public class Settings extends AppCompatActivity {
         }
         switch1.refreshDrawableState();
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 9999 && resultCode == RESULT_OK) {
-            Uri extras = data.getData();
-            String path = (String) extras.getPath();
-            String path2 =path.replace(":","/");
-            Log.d("msg", "path: " +path);
-            Log.d("msg", "path2: " +path2);
             BufferedReader reader = null;
             try {
                 // open the user-picked file for reading:
@@ -413,8 +310,10 @@ public class Settings extends AppCompatActivity {
                     builder.append("\n");
                 }
                 // Do something with the content in
-                tvLogs.append("\n"+ builder.toString());
-                Log.d("msg", "txt:  " +builder.toString());
+                String myText = builder.toString();
+                tvLogs.append(myText);
+                logger.addRecordToLog(myText);
+                Log.d("msg", "txt:  " + myText);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -428,7 +327,54 @@ public class Settings extends AppCompatActivity {
                     }
                 }
             }
-
+        }
+    }
+    private void setIfDenied(String substring) {
+        switch (substring) {
+            case "SEND_SMS":
+                switch1.setChecked(false);
+                switch1.refreshDrawableState();
+                Log.d("msg", "SEND_SMS = 0");
+                break;
+            case "READ_PHONE_STATE":
+                switch2.setChecked(false);
+                switch2.refreshDrawableState();
+                Log.d("msg", "READ_PHONE_STATE = 0");
+                break;
+            case "READ_PHONE_NUMBERS":
+                switch3.setChecked(false);
+                switch3.refreshDrawableState();
+                Log.d("msg", "READ_PHONE_NUMBERS = 0");
+                break;
+            case "READ_CALL_LOG":
+                switch4.setChecked(false);
+                Log.d("msg", "READ_CALL_LOG = 0");
+                switch4.refreshDrawableState();
+                break;
+        }
+    }
+    private void setIfGranted(String requestedPermission) {
+        switch (requestedPermission) {
+            case "SEND_SMS":
+                switch1.setChecked(true);
+                switch1.refreshDrawableState();
+                Log.d("msg", "SEND_SMS = 1");
+                break;
+            case "READ_PHONE_STATE":
+                switch2.setChecked(true);
+                Log.d("msg", "READ_PHONE_STATE = 1");
+                switch2.refreshDrawableState();
+                break;
+            case "READ_PHONE_NUMBERS":
+                switch3.setChecked(true);
+                Log.d("msg", "READ_PHONE_NUMBERS = 1");
+                switch3.refreshDrawableState();
+                break;
+            case "READ_CALL_LOG":
+                switch4.setChecked(true);
+                Log.d("msg", "READ_CALL_LOG = 1");
+                switch4.refreshDrawableState();
+                break;
         }
     }
 }

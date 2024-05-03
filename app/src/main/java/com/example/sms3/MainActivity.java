@@ -35,10 +35,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     public static List<String> mylist = new ArrayList<String>();
     public static int count = 0;
     Logger logger ;
+    private static String filename1 = "AppLogs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "Włącz wszystkie uprawnienia", Toast.LENGTH_SHORT).show();
                 }
-               // onResume();
             }
         });
         btnSettings.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 //        ) {
 //
 //        }
-        Log.d("msg"," Permitiond deined");
+        Log.d("msg","Permition");
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
             for (int i = 0; i < pi.requestedPermissions.length; i++) {
@@ -181,19 +185,30 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Log.d("msg", "save");
-        logger.addRecordToLog("test!");
 
-
-
+        File file = new File("/storage/emulated/0/Dokuments","log.txt");
+        if (!file.exists())  {
+            try  {
+                Log.d("msg", "File created");
+                file.createNewFile();
+                String text ="Create file, data: " + new Date();
+                logger.addRecordToLog(text);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         //go to settings
         Log.d("msg", "go to settings");
         Intent intent = new Intent(MainActivity.this, Settings.class);
         startActivity(intent);
-
     }
     @Override
     protected void onResume() {
         super.onResume();
+        logger.addRecordToLog("onResume");
+
+
 //        logs = "";
 //        logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
 //        logs=logs+"\nisOn = " + (isOn ? "włączone": "wyłączone");
@@ -243,14 +258,13 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        tvLogs.setText(logs); //set text for text view
     }
-
     private void toSettings() {
         Intent intent = new Intent(MainActivity.this, Settings.class);
         String message = "btnSettings";
         intent.putExtra("EXTRA_MESSAGE", message);
         startActivity(intent);
+        logger.addRecordToLog("btnSettings");
     }
-
     private void updateView() {
         list = (ListView) findViewById(R.id.listView1);
         myList2 = new ArrayList<String>();
@@ -258,9 +272,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);
         list.setAdapter(adapter);
     }
-
-    public void showDialog1(int position)
-    {
+    public void showDialog1(int position) {
         Log.d("msg" , "pos= =" +position);
         Context context =MainActivity.this;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
