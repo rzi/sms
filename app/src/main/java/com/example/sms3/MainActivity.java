@@ -134,13 +134,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Wypełnij pole numeru i treść SMS", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.d("msg", "etNumber = " +etNumber.getText().toString() + "\netSms = " + etSms.getText().toString() );
-                    mylist.add(etNumber.getText().toString() + "," + etSms.getText().toString());
+                    String text =etNumber.getText().toString() + " ," + etSms.getText().toString();
+                    mylist.add(text);
+                    addToFile(text);
                     updateView();
                 }
                 etNumber.setText("");
                 etSms.setText("");
             }
         });
+        list = (ListView) findViewById(R.id.listView1);
+        myList2 = new ArrayList<String>();
 
         ListView listView =(android.widget.ListView) findViewById(R.id.listView1);
         listView.setAdapter(adapter);
@@ -186,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("msg", "save");
 
-        File file = new File("/storage/emulated/0/Dokuments","log.txt");
+        File file = new File("/storage/emulated/0/Documents","log.txt");
         if (!file.exists())  {
             try  {
                 Log.d("msg", "File created");
@@ -198,6 +202,20 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        File myList =new File("/storage/emulated/0/Documents","myList.txt");
+        if (!file.exists())  {
+            try  {
+                Log.d("msg", "File myList created");
+                file.createNewFile();
+                String text ="Create file myList , data: " + new Date();
+                logger.addRecordToLog(text);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         //go to settings
         Log.d("msg", "go to settings");
         Intent intent = new Intent(MainActivity.this, Settings.class);
@@ -258,6 +276,19 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        tvLogs.setText(logs); //set text for text view
     }
+    private void addToFile(String text) {
+        try
+        {
+            String filename= "/storage/emulated/0/Documents/mylist.txt";
+            FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+            fw.write(text + "\n");//appends the string to the file
+            fw.close();
+        }
+        catch(IOException ioe)
+        {
+            System.err.println("IOException: " + ioe.getMessage());
+        }
+    }
     private void toSettings() {
         Intent intent = new Intent(MainActivity.this, Settings.class);
         String message = "btnSettings";
@@ -266,8 +297,6 @@ public class MainActivity extends AppCompatActivity {
         logger.addRecordToLog("btnSettings");
     }
     private void updateView() {
-        list = (ListView) findViewById(R.id.listView1);
-        myList2 = new ArrayList<String>();
         myList2.addAll(mylist);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);
         list.setAdapter(adapter);
@@ -283,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mylist.remove(position);
+                deletePosition(position);
                 updateView();
                 dialog.dismiss();
             }
@@ -294,5 +324,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+    private void deletePosition(int position) {
+        Log.d("msg", "pozycja do usunięcia = " +position);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter("/storage/emulated/0/Documents/mylist.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < myList2.size(); i++) {
+            Log.d("msg", "text: "+ myList2.get(i));
+        }
+        for(String str: myList2 ){
+            try {
+                Log.d("msg", "linia: " + str );
+                writer.write(str + System.lineSeparator());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
