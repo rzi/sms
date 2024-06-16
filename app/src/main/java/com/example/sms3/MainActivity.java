@@ -281,12 +281,13 @@ public class MainActivity extends AppCompatActivity {
         logger.addRecordToLog("btnSettings");
     }
     private void updateView() {
+        myList2.clear();
         myList2.addAll(mylist);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);
         list.setAdapter(adapter);
     }
     public void showDialog1(int position) {
-        Log.d("msg" , "pos= =" +position);
+        Log.d("msg" , "pos = " +position);
         Context context =MainActivity.this;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
@@ -295,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Log.d("msg", "click Yes");
                 mylist.remove(position);
                 deletePosition(position);
                 updateView();
@@ -318,10 +320,10 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < myList2.size(); i++) {
-            Log.d("msg", "text: "+ myList2.get(i));
+        for (int i = 0; i < mylist.size(); i++) {
+            Log.d("msg", "text: "+ mylist.get(i));
         }
-        for(String str: myList2 ){
+        for(String str: mylist ){
             try {
                 Log.d("msg", "linia: " + str );
                 writer.write(str + System.lineSeparator());
