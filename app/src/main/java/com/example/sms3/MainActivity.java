@@ -24,7 +24,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -118,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Wypełnij pole numeru i treść SMS", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.d("msg", "etNumber = " +etNumber.getText().toString() + "\netSms = " + etSms.getText().toString() );
-                    String text =etNumber.getText().toString() + " ," + etSms.getText().toString();
+                    String text =etNumber.getText().toString() + "," + etSms.getText().toString();
                     mylist.add(text);
                     addToFile(text);
                     updateView();
@@ -209,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         logger.addRecordToLog("onResume");
-
+        updateView();
+        Log.d("msg", "onResume");
 
 //        logs = "";
 //        logs=logs+"\nAPI = "+String.valueOf(android.os.Build.VERSION.SDK_INT);
@@ -281,6 +286,33 @@ public class MainActivity extends AppCompatActivity {
         logger.addRecordToLog("btnSettings");
     }
     private void updateView() {
+        mylist.clear();;
+        String path ="/storage/emulated/0/Documents/myList.txt";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            String line;
+            while (true) {
+                try {
+                    if (!((line = br.readLine()) != null)) break;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                // process the line
+                mylist.add(line);
+//                Log.d("msg", "Line: "+ line);
+            }
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         myList2.clear();
         myList2.addAll(mylist);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);

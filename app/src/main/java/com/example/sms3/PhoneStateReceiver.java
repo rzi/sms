@@ -27,12 +27,12 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
             Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
                     " state =" +state + " number = " + number);
-            Log.d("msg", "state = " + state);
-            if(
-                    state.equals(TelephonyManager.EXTRA_STATE_RINGING)
-            ){
-                Log.d("msg", "Połączenie z " +number);
-//                doAction(myContext, intent);
+            Log.d("msg", "state = " + state + " isCheckBoxDecline = "+ isCheckBoxDecline + " number = "+ number);
+            if(state.equals(TelephonyManager.EXTRA_STATE_RINGING) ){
+                if(number!="null"){
+                    Log.d("msg", "Połączenie z " +number);
+                    doAction(myContext, intent) ;
+                }
             }
 //            Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
 //            " state =" +state + " number = " + number);
@@ -61,7 +61,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
     private void doAction(Context myContext, Intent intent) {
         Log.d("msg", "isChecked = " + isCheckBoxDecline );
-        if (cbWhenDecline.isChecked() && number != ""){
+        if (cbWhenDecline.isChecked() && number != "" && number != null){
             Log.d("msg", "w IF isChecked = " + cbWhenDecline.isChecked() );
             try {
                 Log.d("msg", "Receiver start");

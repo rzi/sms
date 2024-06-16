@@ -47,15 +47,13 @@ public class SecondActivity extends AppCompatActivity {
                 String[] words = item.split(",");
                 mNumber = words[0];
                 mText = words[1];
-                Log.d("msg" , "mNumber = " +mNumber);
-                Log.d("msg" , "mText = " +mText);
                 if (mNumber.equals(number) && state.equals("RINGING")){
                     Log.d("msg" , "mNumber = "+ mNumber + " mText = " + mText);
+                    Log.d("msg" , "mNumber.equals(number) = "+ mNumber.equals(number) + " state.equals(\"RINGING\") = " + state.equals("RINGING"));
                     //Toast.makeText(getApplicationContext(), "Wysłanie SMS na numer telefonu  "+ number, Toast.LENGTH_LONG).show();
                     if (isOn && mylist.size() >0 && cbWhenDecline.isChecked()) {
                         Log.d("msg" , "send sms");
-
-                        sendSms();
+                        sendSms(mNumber,mText);
 
                     }else {
                         Log.d("msg", "Nie wysano SMS ponieważ nie włączone");
@@ -67,7 +65,7 @@ public class SecondActivity extends AppCompatActivity {
         finish();
     }
 
-    private void sendSms() {
+    private void sendSms(String mNumber,String mText) {
         Logger.addRecordToLog("Data "+ new Date() + " Send SMS");
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
@@ -76,12 +74,12 @@ public class SecondActivity extends AppCompatActivity {
                 try {
                     // Get the default instance of the SmsManager
                     SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(number,
+                    smsManager.sendTextMessage(mNumber,
                             null,
                             mText,
                             null,
                             null);
-                    Log.d("msg", "sms sent");
+                    Log.d("msg", "sms has been sent");
                     Toast.makeText(getApplicationContext(), "Wysano SMS do dzwoniącego o treści: \n " + mText, Toast.LENGTH_LONG).show();
                     count= count+1;
                     Log.d("msg", "count = " + count);
