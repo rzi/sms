@@ -194,7 +194,7 @@ public class Settings extends AppCompatActivity {
                 };
             }
         });
-        String mytxt = "Create settings, data "+ new Date() + " Display settings";
+        String mytxt = "Create settings, data "+ new Date() + " Display settings\n";
         logger.addRecordToLog(mytxt);
     }
     @Override

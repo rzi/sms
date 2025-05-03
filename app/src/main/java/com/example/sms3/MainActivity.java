@@ -6,16 +6,25 @@ import static com.example.sms3.Settings.switch3;
 import static com.example.sms3.Settings.switch4;
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,11 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -124,11 +132,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("msg", "etNumber = " +etNumber.getText().toString() + "\netSms = " + etSms.getText().toString() );
                     String text =etNumber.getText().toString() + "," + etSms.getText().toString();
                     mylist.add(text);
-                    addToFile(text);
+                    appendLineToFile(getBaseContext(), "myList.txt" , text);
                     updateView();
                 }
                 etNumber.setText("");
                 etSms.setText("");
+                hideKeyboard(v.getContext(), v);
             }
         });
         list = (ListView) findViewById(R.id.listView1);
@@ -178,30 +187,47 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("msg", "save");
 
-        File file = new File("/storage/emulated/0/Documents","log.txt");
-        if (!file.exists())  {
-            try  {
-                Log.d("msg", "File created");
-                file.createNewFile();
-                String text ="Create file, data: " + new Date();
-                logger.addRecordToLog(text);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        if (!doesFileExist(this, "log.txt")) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Files.FileColumns.DISPLAY_NAME, "log.txt");
+            values.put(MediaStore.Files.FileColumns.MIME_TYPE, "text/plain");
+            values.put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS);
 
-        File myList =new File("/storage/emulated/0/Documents","myList.txt");
-        if (!file.exists())  {
-            try  {
-                Log.d("msg", "File myList created");
-                file.createNewFile();
-                String text ="Create file myList , data: " + new Date();
-                logger.addRecordToLog(text);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            ContentResolver resolver = getContentResolver();
+            Uri uri = resolver.insert(MediaStore.Files.getContentUri("external"), values);
+
+            if (uri != null) {
+                try (OutputStream outputStream = resolver.openOutputStream(uri)) {
+                    outputStream.write("Start\n".getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            String text ="Create file, data: " + new Date();
+            logger.addRecordToLog(text);
+        } else {
+            Log.d("MainActivity", "Plik już istnieje – pomijam zapis.");
+        }
+        if (!doesFileExist(this, "myList.txt")) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Files.FileColumns.DISPLAY_NAME, "myList.txt");
+            values.put(MediaStore.Files.FileColumns.MIME_TYPE, "text/plain");
+            values.put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS);
+
+            ContentResolver resolver = getContentResolver();
+            Uri uri = resolver.insert(MediaStore.Files.getContentUri("external"), values);
+
+            if (uri != null) {
+                try (OutputStream outputStream = resolver.openOutputStream(uri)) {
+                    outputStream.write("602599761,Nie mogę rozmawiać\n".getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            String text ="Create file, data: " + new Date();
+            logger.addRecordToLog(text);
+        } else {
+            Log.d("MainActivity", "Plik już istnieje – pomijam zapis.");
         }
 
         //go to settings
@@ -265,19 +291,6 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        tvLogs.setText(logs); //set text for text view
     }
-    private void addToFile(String text) {
-        try
-        {
-            String filename= "/storage/emulated/0/Documents/mylist.txt";
-            FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-            fw.write(text + "\n");//appends the string to the file
-            fw.close();
-        }
-        catch(IOException ioe)
-        {
-            System.err.println("IOException: " + ioe.getMessage());
-        }
-    }
     private void toSettings() {
         Intent intent = new Intent(MainActivity.this, Settings.class);
         String message = "btnSettings";
@@ -286,37 +299,15 @@ public class MainActivity extends AppCompatActivity {
         logger.addRecordToLog("btnSettings");
     }
     private void updateView() {
-        mylist.clear();;
-        String path ="/storage/emulated/0/Documents/myList.txt";
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(path));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            String line;
-            while (true) {
-                try {
-                    if (!((line = br.readLine()) != null)) break;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                // process the line
-                mylist.add(line);
-//                Log.d("msg", "Line: "+ line);
-            }
-        } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        mylist.clear();
+        String contents = readTextFileFromDocuments(this, "myList.txt");
+        mylist.add(contents);
+        Log.d("msg", "Line: "+ contents);
         myList2.clear();
         myList2.addAll(mylist);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_list, myList2);
         list.setAdapter(adapter);
+        Log.d("msg", "Koniec update ");
     }
     public void showDialog1(int position) {
         Log.d("msg" , "pos = " +position);
@@ -345,28 +336,246 @@ public class MainActivity extends AppCompatActivity {
     }
     private void deletePosition(int position) {
         Log.d("msg", "pozycja do usunięcia = " +position);
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter("/storage/emulated/0/Documents/mylist.txt");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+//        removeLineByIndexFromFile(this, "myList.txt", position); // usuwa 3. linię (indeks 2)
+        clearFileContentInDocuments(this, "myList.txt");
+        Log.d("msg", "text: " + position);
+    }
+    public boolean doesFileExist(Context context, String fileName) {
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = new String[] {
+                MediaStore.Files.FileColumns._ID
+        };
+
+        String selection = MediaStore.Files.FileColumns.DISPLAY_NAME + "=? AND " +
+                MediaStore.Files.FileColumns.RELATIVE_PATH + "=?";
+        String[] selectionArgs = new String[] {
+                fileName,
+                Environment.DIRECTORY_DOCUMENTS + "/"
+        };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        )) {
+            return cursor != null && cursor.moveToFirst();
+        }
+    }
+    public void appendLineToFile(Context context, String fileName, String newLine) {
+        Uri uri = findFileUri(context, fileName);
+        if (uri == null) {
+            Log.e("Append", "Plik nie znaleziony");
+            return;
         }
 
-        for (int i = 0; i < mylist.size(); i++) {
-            Log.d("msg", "text: "+ mylist.get(i));
+        ContentResolver resolver = context.getContentResolver();
+
+        try {
+            // 1. Odczytaj całą zawartość
+            InputStream inputStream = resolver.openInputStream(uri);
+            StringBuilder content = new StringBuilder();
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                inputStream.close();
+            }
+
+            // 2. Dodaj nową linijkę
+            content.append(newLine).append("\n");
+
+            // 3. Nadpisz plik
+            OutputStream outputStream = resolver.openOutputStream(uri, "wt"); // "wt" = write & truncate
+            if (outputStream != null) {
+                outputStream.write(content.toString().getBytes());
+                outputStream.close();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        for(String str: mylist ){
-            try {
-                Log.d("msg", "linia: " + str );
-                writer.write(str + System.lineSeparator());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    }
+    Uri findFileUri(Context context, String fileName) {
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = new String[] {
+                MediaStore.Files.FileColumns._ID
+        };
+
+        String selection = MediaStore.Files.FileColumns.DISPLAY_NAME + "=? AND " +
+                MediaStore.Files.FileColumns.RELATIVE_PATH + "=?";
+        String[] selectionArgs = new String[] {
+                fileName,
+                Environment.DIRECTORY_DOCUMENTS + "/"
+        };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+                return ContentUris.withAppendedId(collection, id);
             }
         }
-        try {
-            writer.close();
+        return null;
+    }
+    public String readTextFileFromDocuments(Context context, String fileName) {
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = new String[] {
+                MediaStore.Files.FileColumns._ID
+        };
+
+        String selection = MediaStore.Files.FileColumns.DISPLAY_NAME + "=? AND " +
+                MediaStore.Files.FileColumns.RELATIVE_PATH + "=?";
+        String[] selectionArgs = new String[] {
+                fileName,
+                Environment.DIRECTORY_DOCUMENTS + "/"
+        };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+                Uri fileUri = ContentUris.withAppendedId(collection, id);
+
+                InputStream inputStream = context.getContentResolver().openInputStream(fileUri);
+                if (inputStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder builder = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line).append("\n");
+                    }
+                    reader.close();
+                    return builder.toString();
+                }
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
+        return null; // plik nie istnieje lub błąd
+    }
+    public void clearFileContentInDocuments(Context context, String fileName) {
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = new String[] {
+                MediaStore.Files.FileColumns._ID
+        };
+
+        String selection = MediaStore.Files.FileColumns.DISPLAY_NAME + "=? AND " +
+                MediaStore.Files.FileColumns.RELATIVE_PATH + "=?";
+        String[] selectionArgs = new String[] {
+                fileName,
+                Environment.DIRECTORY_DOCUMENTS + "/"
+        };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+                Uri fileUri = ContentUris.withAppendedId(collection, id);
+
+                // 🔄 Otwórz w trybie "write & truncate"
+                OutputStream outputStream = context.getContentResolver().openOutputStream(fileUri, "wt");
+                if (outputStream != null) {
+                    outputStream.write("".getBytes()); // zapisz pustą zawartość
+                    outputStream.close();
+                    Log.d("MainActivity", "Zawartość pliku wyczyszczona.");
+                }
+            } else {
+                Log.d("MainActivity", "Plik nie istnieje.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void removeLineByIndexFromFile(Context context, String fileName, int lineIndex) {
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = new String[] {
+                MediaStore.Files.FileColumns._ID
+        };
+
+        String selection = MediaStore.Files.FileColumns.DISPLAY_NAME + "=? AND " +
+                MediaStore.Files.FileColumns.RELATIVE_PATH + "=?";
+        String[] selectionArgs = new String[] {
+                fileName,
+                Environment.DIRECTORY_DOCUMENTS + "/"
+        };
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+                Uri fileUri = ContentUris.withAppendedId(collection, id);
+
+                ContentResolver resolver = context.getContentResolver();
+
+                // 1. Odczytaj wszystkie linie
+                List<String> lines = new ArrayList<>();
+                InputStream inputStream = resolver.openInputStream(fileUri);
+                if (inputStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        lines.add(line);
+                    }
+                    reader.close();
+                    inputStream.close();
+                }
+
+                // 2. Usuń wybraną linię jeśli istnieje
+                if (lineIndex >= 0 && lineIndex < lines.size()) {
+                    lines.remove(lineIndex);
+                } else {
+                    Log.w("MainActivity", "Podany indeks linii jest poza zakresem");
+                    return;
+                }
+
+                // 3. Nadpisz plik
+                OutputStream outputStream = resolver.openOutputStream(fileUri, "wt");
+                if (outputStream != null) {
+                    for (String l : lines) {
+                        outputStream.write((l + "\n").getBytes());
+                    }
+                    outputStream.close();
+                    Log.d("MainActivity", "Usunięto linię o indeksie: " + lineIndex);
+                }
+            } else {
+                Log.d("MainActivity", "Plik nie został znaleziony.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void hideKeyboard(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
