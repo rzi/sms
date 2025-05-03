@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("msg", "Button Add");
                 Log.d("msg", "etNumber = " + etNumber.getText());
-                if (false){
+                if (Objects.equals(etNumber.getText().toString(), "") || Objects.equals(etSms.getText().toString(), "")){
                     Log.d("msg", "wypełnij pola mumber = "+ etNumber.getText().toString() + "i trec SMS ="+ etSms.getText().toString() );
                     Toast.makeText(MainActivity.this, "Wypełnij pole numeru i treść SMS", Toast.LENGTH_SHORT).show();
                 }else {
