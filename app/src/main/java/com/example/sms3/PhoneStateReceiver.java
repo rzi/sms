@@ -20,11 +20,15 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         Context myContext = context;
 
         Log.d("msg", "save in broadcast");
+        Log.d("msg", "intent.getAction() = " + intent.getAction() );
 
         if(intent.getAction().equals("android.intent.action.PHONE_STATE")){
 
             state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+//            if (number.startsWith("+") && number.length() > 3) {
+//                number= number.substring(3);
+//            }
             Logger.addRecordToLog("Data "+ new Date() + " Otrzymano Broadcast" +
                     " state =" +state + " number = " + number);
             Log.d("msg", "state = " + state + " isCheckBoxDecline = "+ isCheckBoxDecline + " number = "+ number);

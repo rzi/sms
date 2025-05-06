@@ -35,7 +35,9 @@ public class SecondActivity extends AppCompatActivity {
         state = myIntent.getStringExtra("state");
         Log.d("msg", "number from Intent= " +number + " state= "+ state);
         message ="ha ha ha ";
-
+        if (number.startsWith("+") && number.length() > 3) {
+            number = number.substring(3);
+        }
         if (mylist.size() == 0) {
             Log.d("msg" , "mylist.size = " +mylist.size());
             Toast.makeText(getApplicationContext(), "Lista numerów i SMSów jest pusta", Toast.LENGTH_LONG).show();
@@ -47,7 +49,7 @@ public class SecondActivity extends AppCompatActivity {
                 String[] words = item.split(",");
                 mNumber = words[0];
                 mText = words[1];
-                if (mNumber.equals(number) && state.equals("RINGING")){
+                if (mNumber.equals(number)&& state.equals("RINGING")){
                     Log.d("msg" , "mNumber = "+ mNumber + " mText = " + mText);
                     Log.d("msg" , "mNumber.equals(number) = "+ mNumber.equals(number) + " state.equals(\"RINGING\") = " + state.equals("RINGING"));
                     //Toast.makeText(getApplicationContext(), "Wysłanie SMS na numer telefonu  "+ number, Toast.LENGTH_LONG).show();
